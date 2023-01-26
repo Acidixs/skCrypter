@@ -61,6 +61,7 @@ namespace skc
 	class skCrypter
 	{
 	public:
+
 		__forceinline constexpr skCrypter(T* data)
 		{		
 			crypt(data);
@@ -73,7 +74,7 @@ namespace skc
 
 		__forceinline int size() // (w)char count
 		{
-			return _size;
+			return _size / sizeof(T);
 		}
 
 		__forceinline  char key()
@@ -110,6 +111,19 @@ namespace skc
 			}
 		}
 
+		__forceinline operator std::string ()
+		{
+			decrypt();
+
+			return _storage;
+		}
+
+		__forceinline operator std::wstring()
+		{
+			decrypt();
+			return std::wstring(_storage, _storage + _size / sizeof(T));
+		}
+
 		__forceinline operator T* ()
 		{
 			decrypt();
@@ -132,9 +146,9 @@ namespace skc
 
 #define skCrypt(str) skCrypt_key(str, __TIME__[4], __TIME__[7])
 #define skCrypt_key(str, key1, key2) []() { \
-			constexpr static auto crypted = skc::skCrypter \
-				<sizeof(str) / sizeof(str[0]), key1, key2, skc::clean_type<decltype(str[0])>>((skc::clean_type<decltype(str[0])>*)str); \
-					return crypted; }()
+            constexpr static auto crypted = skc::skCrypter \
+                <sizeof(str) / sizeof(str[0]), key1, key2, skc::clean_type<decltype(str[0])>>((skc::clean_type<decltype(str[0])>*)str); \
+                    return crypted; }()
 
 /*________________________________________________________________________________
 
